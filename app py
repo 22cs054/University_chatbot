@@ -1,0 +1,32 @@
+from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+# Chatbot responses
+responses = {
+    "admission": "Our university admission process starts in June.",
+    "fees": "The tuition fees vary by course. Check our website for details.",
+    "courses": "We offer programs in Science, Engineering, Arts, and Management.",
+    "contact": "You can contact us at contact@university.com or +1234567890.",
+    "default": "I'm sorry, I don't have that information. Please check our university website."
+}
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.get_json()
+    user_message = data.get("message", "").lower()
+
+    for key in responses:
+        if key in user_message:
+            return jsonify({"response": responses[key]})
+
+    return jsonify({"response": responses["default"]})
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
